@@ -1,4 +1,11 @@
-#include <iostream>
+void printf(char* str)
+{
+    unsigned short* VideoMemory = (unsigned short*)0xb8000; // Video memory address
+    
+    for (int i=0; str[i] != '\0'; ++i) {
+        VideoMemory[i] = (VideoMemory[i] & 0xFF00) | str[i]; // so that we dont overwrite color bit
+    }
+}
 
 void kernelMain(void* multiboot_structure, unsigned int magicnumber)
 {
