@@ -1,4 +1,4 @@
-void printf(char* str)
+void printf(const char* str)
 {
     unsigned short* VideoMemory = (unsigned short*)0xb8000; // Video memory address
     
@@ -13,7 +13,7 @@ extern "C" constructor end_ctors;
 
 extern "C" void callConstructors()
 {
-  for (constructor* i = &start_ctors; i != end_ctors; ++i)
+  for (constructor* i = &start_ctors; i != &end_ctors; ++i)
   {
     (*i)(); // just invoke constructors of our global objects
   }
