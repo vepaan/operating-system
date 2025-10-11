@@ -7,6 +7,18 @@ void printf(char* str)
     }
 }
 
+typedef void (*constructor)();
+extern "C" constructor start_ctors;
+extern "C" constructor end_ctors;
+
+extern "C" void callConstructors()
+{
+  for (constructor* i = &start_ctors; i != end_ctors; ++i)
+  {
+    (*i)(); // just invoke constructors of our global objects
+  }
+}
+
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber)
 {
     printf("Hello World!");
