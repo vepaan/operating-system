@@ -12,7 +12,7 @@ MouseDriver::MouseDriver(InterruptManager* manager)
 
   VideoMemory[80*12+40] = ((VideoMemory[80*12+40] & 0xF000) >> 4)
                       | ((VideoMemory[80*12+40] & 0x0F00) << 4)
-                      | ((VideoMemory[80*12+40] & 0x0FF));
+                      | ((VideoMemory[80*12+40] & 0x00FF));
 
   commandport.Write(0xA8); // activate mouse interrupt
   commandport.Write(0x20); // get current state
