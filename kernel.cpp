@@ -82,7 +82,8 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     printf("Initializing Hardware, Stage 1...\n");
     DriverManager drvManager;
 
-      MouseDriver mouse(&interrupts);
+      MouseToConsole mhandler;
+      MouseDriver mouse(&interrupts, &mhandler);
       drvManager.AddDriver(&mouse);
 
       PrintfKeyboardEventHanlder kbhandler;

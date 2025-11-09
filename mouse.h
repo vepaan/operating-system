@@ -6,16 +6,40 @@
 #include "driver.h"
 #include "port.h"
 
+class MouseEventHandler
+{
+public:
+  MouseEventHandler();
+  virtual void OnActivate();
+  virtual void OnMouseDown(uint8_t button);
+  virtual void OnMouseUp(uint8_t button);
+  virtual void OnMouseMove(int x, int y);
+};
+
+class MouseToConsole: public MouseEventHandler
+{
+private:
+  int8_t x, y;
+
+public:
+  MouseToConsole();
+  void OnMouseMove(int x, int y);
+};
+
 class MouseDriver: public InterruptHandler, public Driver
 {
+private:
   Port8Bit dataport;
   Port8Bit commandport;
 
   uint8_t buffer[3]; // how mouse data is received (X-axis movememnt->buffer[1], Y-axis movement->buffer[2])
   uint8_t offset; // can be 0, 1, or 2, just trial and error for your mouse
   uint8_t buttons;
+
+  MouseEventHandler* handler;
+
 public:
-  MouseDriver(InterruptManager* manager);
+  MouseDriver(InterruptManager* manager, MouseEventHandler* handler);
   ~MouseDriver();
   virtual uint32_t HandleInterrupt(uint32_t esp);
   virtual void Activate();
