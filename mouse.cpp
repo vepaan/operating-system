@@ -48,7 +48,7 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
 
     VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
                         | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                        | ((VideoMemory[80*y+x] & 0x0FF));
+                        | ((VideoMemory[80*y+x] & 0x00FF));
 
     x += buffer[1];
     if (x < 0) x = 0;
@@ -60,7 +60,19 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
 
     VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
                         | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                        | ((VideoMemory[80*y+x] & 0x0FF));
+                        | ((VideoMemory[80*y+x] & 0x00FF));
+
+    for (uint8_t i=0; i<3; ++i)
+    {
+      if ((buffer[0] & (0x01 << i)) != (buttons & (0x01 << i)))
+      {
+        // currently just blipping color when button is pressed
+        VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
+                        | ((VideoMemory[80*y+x] & 0x0F00) << 4)
+                        | ((VideoMemory[80*y+x] & 0x00FF));
+      }
+    }
+    buttons = buffer[0];
   }
   
   return esp;
