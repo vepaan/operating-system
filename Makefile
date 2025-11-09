@@ -37,4 +37,4 @@ clean:
 	rm -rf iso
 
 run: mykernel.iso
-	qemu-system-i386 -cdrom mykernel.iso
+	VBoxManage startvm "VisionOS" --type gui
