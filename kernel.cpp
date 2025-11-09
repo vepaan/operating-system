@@ -48,6 +48,15 @@ void printf(const char* str)
     }
 }
 
+void printfHex(uint8_t key)
+{
+  char* foo = "00";
+  char* hex = "0123456789ABCDEF";
+  foo[0] = hex[(key >> 4) & 0x0F];
+  foo[1] = hex[key & 0x0F];
+  printf(foo);
+}
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -76,7 +85,8 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
       MouseDriver mouse(&interrupts);
       drvManager.AddDriver(&mouse);
 
-      KeyboardDriver keyboard(&interrupts);
+      PrintfKeyboardEventHanlder kbhandler;
+      KeyboardDriver keyboard(&interrupts, &kbhandler);
       drvManager.AddDriver(&keyboard);
 
     printf("Activating all drivers, Stage 2...\n");
