@@ -1,35 +1,17 @@
 #include "mouse.h"
 
+void printf(const char*);
+
 MouseDriver::MouseDriver(InterruptManager* manager)
 : InterruptHandler(0x2C, manager), //mouse interrupt is 0x2C
   dataport(0x60), 
   commandport(0x64)
 {
-  offset = 0; // between 0-2 try and error
-  buttons = 0;
-
-  uint16_t* VideoMemory = (uint16_t*)0xb8000;
-
-  VideoMemory[80*12+40] = ((VideoMemory[80*12+40] & 0xF000) >> 4)
-                      | ((VideoMemory[80*12+40] & 0x0F00) << 4)
-                      | ((VideoMemory[80*12+40] & 0x00FF));
-
-  commandport.Write(0xA8); // activate mouse interrupt
-  commandport.Write(0x20); // get current state
-  uint8_t status = dataport.Read() | 2;
-  commandport.Write(0x60); // set state
-  dataport.Write(status);
-
-  commandport.Write(0xD4);
-  dataport.Write(0xF4);
-  dataport.Read();
 }
 
 MouseDriver::~MouseDriver()
 {
 }
-
-void printf(const char*);
 
 uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
 {
@@ -77,3 +59,26 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
   
   return esp;
 }
+
+void MouseDriver::Activate()
+{
+  offset = 0; // between 0-2 try and error
+  buttons = 0;
+
+  uint16_t* VideoMemory = (uint16_t*)0xb8000;
+
+  VideoMemory[80*12+40] = ((VideoMemory[80*12+40] & 0xF000) >> 4)
+                      | ((VideoMemory[80*12+40] & 0x0F00) << 4)
+                      | ((VideoMemory[80*12+40] & 0x00FF));
+
+  commandport.Write(0xA8); // activate mouse interrupt
+  commandport.Write(0x20); // get current state
+  uint8_t status = dataport.Read() | 2;
+  commandport.Write(0x60); // set state
+  dataport.Write(status);
+
+  commandport.Write(0xD4);
+  dataport.Write(0xF4);
+  dataport.Read();
+}
+
