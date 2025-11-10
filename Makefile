@@ -43,8 +43,7 @@ mykernel.iso: mykernel.bin
 
 .PHONY: clean
 clean:
-	rm -rf obj mykernel.bin mykernel.iso
-	rm -rf iso
+	rm -rf obj iso mykernel.bin mykernel.iso
 
 run: mykernel.iso
 	VBoxManage startvm "VisionOS" --type gui
