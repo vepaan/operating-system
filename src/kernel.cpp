@@ -1,6 +1,7 @@
 #include <common/types.h>
 #include <gdt.h>
 #include <hardwarecommunication/interrupts.h>
+#include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
@@ -94,6 +95,9 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
       PrintfKeyboardEventHanlder kbhandler;
       KeyboardDriver keyboard(&interrupts, &kbhandler);
       drvManager.AddDriver(&keyboard);
+
+      PeripheralComponentInterconnectController PCIController;
+      PCIController.SelectDrivers(&drvManager);
 
     printf("Activating all drivers, Stage 2...\n");
     drvManager.ActivateAll();
