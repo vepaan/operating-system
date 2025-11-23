@@ -1,5 +1,5 @@
 #ifndef __MYOS__GUI_WIDGET_H
-#define __MYOS_GUI_WIDGET_H
+#define __MYOS__GUI_WIDGET_H
 
 #include <common/types.h>
 #include <common/graphicscontext.h>
