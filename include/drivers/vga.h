@@ -26,6 +26,8 @@ namespace myos {
         hardwarecommunication::Port8Bit attributeControllerWritePort;
         hardwarecommunication::Port8Bit attributeControllerResetPort;
 
+        myos::common::uint8_t* curFrameBuffer;
+
         void WriteRegisters(myos::common::uint8_t* registers);
         myos::common::uint8_t* GetFrameBufferSegment();
 

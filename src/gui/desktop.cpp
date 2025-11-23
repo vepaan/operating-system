@@ -40,8 +40,8 @@ void Desktop::OnMouseUp(uint8_t button)
 void Desktop::OnMouseMove(int x, int y)
 {
     // dividing relative movement to make it slower
-    //x *= 2;
-    //y *= 2;
+    x /= 4;
+    y /= 4;
 
     int32_t newMouseX = MouseX + x;
     if (newMouseX < 0) newMouseX = 0;

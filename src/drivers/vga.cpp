@@ -14,7 +14,9 @@ VideoGraphicsArray::VideoGraphicsArray() :
     attributeControllerIndexPort(0x3c0),
     attributeControllerReadPort(0x3c1),
     attributeControllerWritePort(0x3c0),
-    attributeControllerResetPort(0x3da)
+    attributeControllerResetPort(0x3da),
+
+    curFrameBuffer(0x00000)
 {
 }
 
@@ -100,6 +102,7 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
     };
 
     WriteRegisters(g_320x200x256);
+    curFrameBuffer = GetFrameBufferSegment();
     return true;
 }
 
@@ -121,7 +124,7 @@ uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
 void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
 {
     if (x < 0 || 320 <= x || y < 0 || 200 <= y) return;
-    uint8_t* pixelAddress = GetFrameBufferSegment() + 320*y + x;
+    uint8_t* pixelAddress = curFrameBuffer + 320*y + x;
     *pixelAddress = colorIndex;
 }
 
