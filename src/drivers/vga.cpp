@@ -145,7 +145,30 @@ void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, ui
 
 void VideoGraphicsArray::FillRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b)
 {
-    for (int32_t Y=y; Y<y+h; ++Y)
-      for (int32_t X=x; X<x+w; ++X)
-        PutPixel(X, Y, r, g, b);
+    // This implementation is much slower
+    // for (int32_t Y=y; Y<y+h; ++Y)
+    //   for (int32_t X=x; X<x+w; ++X)
+    //     PutPixel(X, Y, r, g, b);
+
+    uint8_t colorIndex = GetColorIndex(r, g, b);
+    if (x >= 320 || y >= 200) return;
+    if (x + w > 320) w = 320 - x;
+    if (y + h > 200) h = 200 - y;
+
+    // Calculate the starting offset for the first row
+    int offset = 320 * y + x;
+
+    for (int i = 0; i < h; ++i)
+    {
+        // Get the pointer to the start of the current row
+        uint8_t* pixelAddress = curFrameBuffer + offset;
+        // Fill the row
+        for (int j = 0; j < w; ++j)
+        {
+            *pixelAddress = colorIndex;
+            ++pixelAddress;
+        }
+        // Move the offset to the start of the next line (width of screen is 320)
+        offset += 320;
+    }
 }
