@@ -6,11 +6,13 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <gui/desktop.h>
 
 using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
+using namespace myos::gui;
 
 void printf(const char* str)
 {
@@ -86,34 +88,38 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     printf("Initializing Interrupt Manager...\n");
     InterruptManager interrupts(&gdt);
 
-    printf("Initializing Hardware, Stage 1...\n");
+    printf("Initializing Desktop...\n");
+    Desktop desktop(320, 300, 0x00, 0x00, 0xA8);
+
+    printf("Initializing Driver Manager...\n");
     DriverManager drvManager;
 
-      MouseToConsole mhandler;
-      MouseDriver mouse(&interrupts, &mhandler);
+      //MouseToConsole mhandler;
+      //MouseDriver mouse(&interrupts, &mhandler);
+      MouseDriver mouse(&interrupts, &desktop);
       drvManager.AddDriver(&mouse);
 
-      PrintfKeyboardEventHanlder kbhandler;
-      KeyboardDriver keyboard(&interrupts, &kbhandler);
+      //PrintfKeyboardEventHanlder kbhandler;
+      //KeyboardDriver keyboard(&interrupts, &kbhandler);
+      KeyboardDriver keyboard(&interrupts, &desktop);
       drvManager.AddDriver(&keyboard);
 
       PeripheralComponentInterconnectController PCIController;
       PCIController.SelectDrivers(&drvManager, &interrupts);
 
+      printf("Initializing VGA...\n");
       VideoGraphicsArray vga;
 
-    printf("Activating all drivers, Stage 2...\n");
+    printf("Activating all drivers...\n");
     drvManager.ActivateAll();
-
-    printf("Activating Interrupts, Stage 3...\n");
-    interrupts.Activate();
 
     vga.SetMode(320, 200, 8);
 
-    // drawing smth simple (blue rectangle)
-    for (int32_t y=0; y<200; ++y)
-      for (int32_t x=0; x<320; ++x)
-        vga.PutPixel(x, y, 0x00, 0x00, 0xA8);
+    printf("Activating Interrupts...\n");
+    interrupts.Activate();
 
-    while(1);
+    while(1)
+    {
+      desktop.Draw(&vga);
+    }
 }
