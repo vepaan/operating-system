@@ -1,5 +1,6 @@
 #include <hardwarecommunication/interrupts.h>
 
+using namespace myos;
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
@@ -45,13 +46,16 @@ void InterruptManager::SetInterruptDescriptorTableEntry(
   interruptDescriptorTable[interruptNumber].reserved = 0;
 }
 
-InterruptManager::InterruptManager(GlobalDescriptorTable* gdt)
+InterruptManager::InterruptManager(uint16_t HardwareInterruptOffset, GlobalDescriptorTable* gdt, TaskManager* taskManager)
 : picMasterCommand(0x20),
   picMasterData(0x21),
   picSlaveCommand(0xA0),
   picSlaveData(0xA1)
 {
+  this->taskManager = taskManager;
+  this->hardwareInterruptOffset = HardwareInterruptOffset;
   uint16_t CodeSegment = gdt->CodeSegmentSelector();
+
   const uint8_t IDT_INTERRUPT_GATE = 0xE;
 
   for(uint16_t i=0; i<256; ++i)
@@ -91,6 +95,11 @@ InterruptManager::~InterruptManager()
 {
 }
 
+uint16_t InterruptManager::HardwareInterruptOffset()
+{
+  return hardwareInterruptOffset;
+}
+
 void InterruptManager::Activate()
 {
   if (ActiveInterruptManager != 0)
@@ -120,16 +129,22 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
   if(handlers[interruptNumber] != 0)
   {
     esp = handlers[interruptNumber]->HandleInterrupt(esp);
-  } else if(interruptNumber != 0x20) // timer interrupt
+  } 
+  else if(interruptNumber != hardwareInterruptOffset) // timer interrupt
   {
     printf("UNHANDLED INTERRUPT 0X");
     printfHex(interruptNumber);
   }
 
-  if(0x20 <= interruptNumber && interruptNumber < 0x30) // if interrupt from master
+  if (interruptNumber == hardwareInterruptOffset)
+  {
+    esp = (uint32_t)taskManager->Schedule((CPUState*)esp);
+  }
+
+  if(hardwareInterruptOffset <= interruptNumber && interruptNumber < hardwareInterruptOffset+16) // if interrupt from master
   {
     picMasterCommand.Write(0x20);
-    if(0x28 <= interruptNumber) // if interrupt from slave
+    if(hardwareInterruptOffset+8 <= interruptNumber) // if interrupt from slave
       picSlaveCommand.Write(0x20);
   }
 

@@ -8,8 +8,9 @@
 #include <drivers/vga.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
+#include <multitasking.h>
 
-#define GRAPHICSMODE
+//#define GRAPHICSMODE
 
 using namespace myos;
 using namespace myos::common;
@@ -69,6 +70,9 @@ void printfHex(uint8_t key)
   printf(foo);
 }
 
+void taskA() { while (true) printf("A"); }
+void taskB() { while (true) printf("B"); }
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -88,8 +92,15 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     printf("Initializing Global Descriptor Table...\n");
     GlobalDescriptorTable gdt;
 
+    printf("Initializing Task Manager...\n");
+    TaskManager taskManager;
+    Task task1(&gdt, taskA);
+    Task task2(&gdt, taskB);
+    taskManager.AddTask(&task1);
+    taskManager.AddTask(&task2);
+
     printf("Initializing Interrupt Manager...\n");
-    InterruptManager interrupts(&gdt);
+    InterruptManager interrupts(0x20, &gdt, &taskManager);
 
     #ifdef GRAPHICSMODE
       printf("Initializing Desktop...\n");

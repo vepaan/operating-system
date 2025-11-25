@@ -4,7 +4,7 @@
 #include <common/types.h>
 #include <hardwarecommunication/port.h>
 #include <gdt.h>
-
+#include <multitasking.h>
 
 namespace myos
 {
@@ -35,6 +35,7 @@ namespace myos
 
       static InterruptManager* ActiveInterruptManager;
       InterruptHandler* handlers[256];
+      TaskManager* taskManager;
 
       struct GateDescriptor
       {
@@ -52,6 +53,8 @@ namespace myos
         myos::common::uint16_t size;
         myos::common::uint32_t base;
       } __attribute__((packed));
+
+      myos::common::uint16_t hardwareInterruptOffset;
 
       static void SetInterruptDescriptorTableEntry(
         myos::common::uint8_t interruptNumber,
@@ -76,9 +79,9 @@ namespace myos
 
     public:
 
-      InterruptManager(myos::GlobalDescriptorTable* gdt);
+      InterruptManager(myos::common::uint16_t hardwareInterruptOffset, myos::GlobalDescriptorTable* gdt, myos::TaskManager* taskManager);
       ~InterruptManager();
-
+      myos::common::uint16_t HardwareInterruptOffset();
       void Activate();
       void Deactivate();
     };
