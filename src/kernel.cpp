@@ -1,5 +1,6 @@
 #include <common/types.h>
 #include <gdt.h>
+#include <memorymanagement.h>
 #include <hardwarecommunication/interrupts.h>
 #include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
@@ -92,12 +93,33 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     printf("Initializing Global Descriptor Table...\n");
     GlobalDescriptorTable gdt;
 
+    printf("Initializing Dynamic Memory Manager...\n");
+    size_t heap = 10*1024*1024;
+    uint32_t* memupper = (uint32_t*)(((size_t)multiboot_structure) + 8); // copied from multiboot_structure official website
+    MemoryManager memoryManager(heap, (*memupper)*1024 - heap - 10*1024);
+
+    printf("Heap: 0x");
+    printfHex((heap >> 24) & 0xFF);
+    printfHex((heap >> 16) & 0xFF);
+    printfHex((heap >> 8) & 0xFF);
+    printfHex((heap) & 0xFF);
+    void* allocated = memoryManager.malloc(1024);
+
+    printf("\nAllocated: 0x");
+    printfHex(((size_t)allocated >> 24) & 0xFF);
+    printfHex(((size_t)allocated >> 16) & 0xFF);
+    printfHex(((size_t)allocated >> 8) & 0xFF);
+    printfHex((size_t)allocated & 0xFF);
+    printf("\n");
+
     printf("Initializing Task Manager...\n");
     TaskManager taskManager;
+    /*
     Task task1(&gdt, taskA);
     Task task2(&gdt, taskB);
     taskManager.AddTask(&task1);
     taskManager.AddTask(&task2);
+    */
 
     printf("Initializing Interrupt Manager...\n");
     InterruptManager interrupts(0x20, &gdt, &taskManager);
