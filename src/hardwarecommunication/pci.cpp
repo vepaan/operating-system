@@ -23,7 +23,7 @@ uint32_t PeripheralComponentInterconnectController::Read(uint16_t bus, uint16_t 
     uint32_t id = 
         0x1 << 31
         | ((bus & 0xFF) << 16)
-        | ((device & 0x1F) << 1)
+        | ((device & 0x1F) << 11)
         | ((function & 0x07) << 8)
         | ((registeroffset & 0xFC));
     
@@ -37,7 +37,7 @@ void PeripheralComponentInterconnectController::Write(uint16_t bus, uint16_t dev
     uint32_t id = 
         0x1 << 31
         | ((bus & 0xFF) << 16)
-        | ((device & 0x1F) << 1)
+        | ((device & 0x1F) << 11)
         | ((function & 0x07) << 8)
         | ((registeroffset & 0xFC));
 
@@ -74,7 +74,11 @@ void PeripheralComponentInterconnectController::SelectDrivers(DriverManager* dri
 
                 Driver* driver = GetDriver(dev, interrupts);
                 if(driver != 0)
+                {
                     driverManager->AddDriver(driver);
+                    uint32_t pciCommand = Read(bus, device, function, 0x04);
+                    Write(bus, device, function, 0x04, pciCommand | 0x04);
+                }
                 
                 printf("PCI BUS");
                 printfHex(bus & 0xFF);
@@ -144,14 +148,17 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
             {
                 case 0x2000: // am79c973
                     driver = (amd_am79c973*)MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
-                    if (driver == 0)
+                    if (driver != 0)
                         new (driver) amd_am79c973(&dev, interrupts);
+                    else
+                        printf("Instantiaion failed\n");
                     return driver;
                     break;
             }
             break;
         
         case 0x8086: // Intel
+            printf("Intel device found\n");
             break;
     }
 

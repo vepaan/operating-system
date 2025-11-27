@@ -121,4 +121,6 @@ uint32_t amd_am79c973::HandleInterrupt(uint32_t esp)
     registerDataPort.Write(temp);
 
     if ((temp & 0x0100) == 0x0100) printf("AMD am79c973 INIT DONE\n");
+
+    return esp;
 }
