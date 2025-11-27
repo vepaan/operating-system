@@ -5,7 +5,7 @@
 #include <common/types.h>
 #include <drivers/driver.h>
 #include <hardwarecommunication/interrupts.h>
-
+#include <memorymanagement.h>
 
 namespace myos
 {

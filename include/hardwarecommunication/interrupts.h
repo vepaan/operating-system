@@ -15,7 +15,6 @@ namespace myos
     class InterruptHandler
     {
     protected:
-
       myos::common::uint8_t interruptNumber;
       InterruptManager* interruptManager;
       
@@ -23,16 +22,16 @@ namespace myos
       ~InterruptHandler();
 
     public:
-
       virtual myos::common::uint32_t HandleInterrupt(myos::common::uint32_t esp);
+
     };
 
 
     class InterruptManager
     {
     friend class InterruptHandler;
-    protected:
 
+    protected:
       static InterruptManager* ActiveInterruptManager;
       InterruptHandler* handlers[256];
       TaskManager* taskManager;
@@ -78,12 +77,12 @@ namespace myos
       Port8BitSlow picSlaveData;
 
     public:
-
       InterruptManager(myos::common::uint16_t hardwareInterruptOffset, myos::GlobalDescriptorTable* gdt, myos::TaskManager* taskManager);
       ~InterruptManager();
       myos::common::uint16_t HardwareInterruptOffset();
       void Activate();
       void Deactivate();
+      
     };
   }
 }
