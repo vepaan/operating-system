@@ -82,8 +82,8 @@ namespace myos
       static void HandleInterruptRequest0x0B();
       static void HandleInterruptRequest0x0C();
       static void HandleInterruptRequest0x0D();
-      static void HandleInterruptRequest0x0E();
-      static void HandleInterruptRequest0x0F();
+      static void HandleInterruptRequest0x0E(); // primary ATA interrupt
+      static void HandleInterruptRequest0x0F(); // secondary ATA interrupt
       static void HandleInterruptRequest0x31();
 
       static void HandleInterruptRequest0x80();

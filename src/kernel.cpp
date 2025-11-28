@@ -1,16 +1,17 @@
 #include <common/types.h>
 #include <gdt.h>
 #include <memorymanagement.h>
+#include <multitasking.h>
 #include <hardwarecommunication/interrupts.h>
 #include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <drivers/amd_am79c973.h>
+#include <drivers/ata.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
-#include <multitasking.h>
-#include <drivers/amd_am79c973.h>
 
 //#define GRAPHICSMODE
 
@@ -167,8 +168,27 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
       desktop.AddChild(&win2);
     #endif
 
+    AdvancedTechnologyAttachment ata0m(0x1F0, true);
+    printf("ATA Primary Master: ");
+    ata0m.Identify();
+
+    AdvancedTechnologyAttachment ata0s(0x1F0, false);
+    printf("ATA Primary Slave: ");
+    ata0s.Identify();
+
+    char atabuffer[] = "nahmanyoutweaking";
+
+    ata0m.Write28(0, (uint8_t*)atabuffer, 17);
+    ata0m.Flush();
+    ata0m.Read28(0, (uint8_t*)atabuffer, 17);
+
+    AdvancedTechnologyAttachment ata1m(0x170, true);
+    AdvancedTechnologyAttachment ata1s(0x170, false);
+
+    /*
     amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
     eth0->Send((uint8_t*)"Hello Network", 13);
+    */
 
     printf("Activating Interrupts...\n");
     interrupts.Activate();

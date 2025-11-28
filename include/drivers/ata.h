@@ -19,6 +19,19 @@ namespace myos
             myos::hardwarecommunication::Port8Bit devicePort;
             myos::hardwarecommunication::Port8Bit commandPort;
             myos::hardwarecommunication::Port8Bit controlPort;
+            
+            bool master;
+            myos::common::uint16_t bytesPerSector;
+
+        public:
+            AdvancedTechnologyAttachment(myos::common::uint16_t portBase, bool master);
+            ~AdvancedTechnologyAttachment();
+
+            void Identify();
+            void Read28(myos::common::uint32_t sector, myos::common::uint8_t* data, int count);
+            void Write28(myos::common::uint32_t sector, myos::common::uint8_t* data, int count);
+            void Flush();
+
         };
     }
 }
