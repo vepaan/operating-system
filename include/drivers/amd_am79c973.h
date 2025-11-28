@@ -65,6 +65,8 @@ namespace myos
             int Reset();
             myos::common::uint32_t HandleInterrupt(myos::common::uint32_t esp);
 
+            void Send(myos::common::uint8_t* buffer, int size);
+            void Receive();
         };
 
     }

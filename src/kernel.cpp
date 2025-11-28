@@ -10,6 +10,7 @@
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
+#include <drivers/amd_am79c973.h>
 
 //#define GRAPHICSMODE
 
@@ -165,6 +166,9 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
       Window win2(&desktop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
       desktop.AddChild(&win2);
     #endif
+
+    amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+    eth0->Send((uint8_t*)"Hello Network", 13);
 
     printf("Activating Interrupts...\n");
     interrupts.Activate();
