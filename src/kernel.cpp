@@ -13,6 +13,7 @@
 #include <drivers/ata.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
+#include <net/etherframe.h>
 
 //#define GRAPHICSMODE
 
@@ -21,6 +22,7 @@ using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
 using namespace myos::gui;
+using namespace myos::net;
 
 void printf(const char* str)
 {
@@ -121,10 +123,12 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
 
     printf("Initializing Task Manager...\n");
     TaskManager taskManager;
+    /*
     Task task1(&gdt, taskA);
     Task task2(&gdt, taskB);
     taskManager.AddTask(&task1);
     taskManager.AddTask(&task2);
+    */
 
     printf("Initializing Interrupt Manager...\n");
     InterruptManager interrupts(0x20, &gdt, &taskManager);
@@ -191,10 +195,12 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     AdvancedTechnologyAttachment ata1m(0x170, true);
     AdvancedTechnologyAttachment ata1s(0x170, false);
 
-    /*
+    
     amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
-    eth0->Send((uint8_t*)"Hello Network", 13);
-    */
+    EtherFrameProvider etherframe(eth0);
+    etherframe.Send(0xFFFFFFFFFFFF, 0x0608, (uint8_t*)"FOO", 3);
+
+    //eth0->Send((uint8_t*)"Hello Network", 13);
 
     printf("Activating Interrupts...\n");
     interrupts.Activate();

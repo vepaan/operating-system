@@ -20,6 +20,7 @@ objects = obj/loader.o \
 		  obj/gui/desktop.o \
 		  obj/gui/widget.o \
 		  obj/gui/window.o \
+			obj/net/etherframe.o \
 		  obj/kernel.o
 
 obj/%.o: src/%.cpp
