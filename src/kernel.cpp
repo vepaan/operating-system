@@ -2,6 +2,7 @@
 #include <gdt.h>
 #include <memorymanagement.h>
 #include <multitasking.h>
+#include <syscalls.h>
 #include <hardwarecommunication/interrupts.h>
 #include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
@@ -73,6 +74,10 @@ void printfHex(uint8_t key)
   printf(foo);
 }
 
+void sysprintf(const char* str)
+{
+  asm("int $0x80" : : "a" (4), "b" (str));
+}
 void taskA() { while (true) printf("A"); }
 void taskB() { while (true) printf("B"); }
 
@@ -116,15 +121,16 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
 
     printf("Initializing Task Manager...\n");
     TaskManager taskManager;
-    /*
     Task task1(&gdt, taskA);
     Task task2(&gdt, taskB);
     taskManager.AddTask(&task1);
     taskManager.AddTask(&task2);
-    */
 
     printf("Initializing Interrupt Manager...\n");
     InterruptManager interrupts(0x20, &gdt, &taskManager);
+
+    printf("Initializing System Call Handler...\n");
+    SyscallHandler syscalls(&interrupts, 0x80);
 
     #ifdef GRAPHICSMODE
       printf("Initializing Desktop...\n");
