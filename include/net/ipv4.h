@@ -16,7 +16,7 @@ namespace myos
       myos::common::uint8_t tos;
       myos::common::uint16_t totalLength;
 
-      myos::common::uint16_t ident;
+      myos::common::uint16_t indent;
       myos::common::uint16_t flagsAndOffset;
 
       myos::common::uint8_t timeToLive;

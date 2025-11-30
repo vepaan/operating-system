@@ -83,7 +83,7 @@ void EtherFrameProvider::Send(uint64_t dstMAC_BE, uint16_t etherType_BE, uint8_t
     dst[i] = src[i];
 
   backend->Send(buffer2, size + sizeof(EtherFrameHeader));
-  MemoryManager::activeMemoryManager-->free(buffer);
+  MemoryManager::activeMemoryManager->free(buffer);
 }
 
 uint64_t EtherFrameProvider::GetMACAddress()

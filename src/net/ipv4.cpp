@@ -51,7 +51,7 @@ bool InternetProtocolProvider::OnEtherFrameReceived(uint8_t* etherframePayload, 
   InternetProtocolV4Message* ipmessage = (InternetProtocolV4Message*)etherframePayload;
   bool sendBack = false;
 
-  if (ipmessage->dstIP_BE == backend->GetIPAddress())
+  if (ipmessage->dstIP == backend->GetIPAddress())
   {
     int length = ipmessage->totalLength;
     if (length > size)
@@ -77,21 +77,20 @@ bool InternetProtocolProvider::OnEtherFrameReceived(uint8_t* etherframePayload, 
   return sendBack;
 }
 
-void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t* buffer, uint32_t size)
+void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t* data, uint32_t size)
 {
-  uint8_t* buffer = MemoryManager::activeMemoryManager->malloc(sizeof(InternetProtocolV4Message) + size);
+  uint8_t* buffer = (uint8_t*)MemoryManager::activeMemoryManager->malloc(sizeof(InternetProtocolV4Message) + size);
   InternetProtocolV4Message* message = (InternetProtocolV4Message*)buffer;
 
   message->version = 4;
   message->headerLength = sizeof(InternetProtocolV4Message) / 4;
   message->tos = 0;
-  message->totalLength = length + sizeof(InternetProtocolV4Message);
+  message->totalLength = size + sizeof(InternetProtocolV4Message);
 
   message->totalLength = ((message->totalLength & 0xFF00) >> 8)
-                       | ((message->totalLength & 0x00FF) << 8) 
+                       | ((message->totalLength & 0x00FF) << 8); 
 
   message->indent = 0x0100;
-  message->flags = 0x00;
   message->flagsAndOffset = 0x0040;
   message->timeToLive = 0x40;
   message->protocol = protocol;
@@ -107,7 +106,7 @@ void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t
     databuffer[i] = data[i];
 
   uint32_t route = dstIP_BE;
-  if((dstIP & subnetMask) != (message->srcIP & subnetMask)) // in the same LAN
+  if((dstIP_BE & subnetMask) != (message->srcIP & subnetMask)) // in the same LAN
     route = gatewayIP;
 
   backend->Send(arp->Resolve(route), this->etherType_BE, buffer, sizeof(InternetProtocolV4Message) + size);
