@@ -179,8 +179,8 @@ extern "C" void kernelMain(void* multiboot_structure, uint32_t magicnumber)
     #endif
 
     AdvancedTechnologyAttachment ata0m(0x1F0, true);
-    printf("ATA Primary Master: ");
-    ata0m.Identify();
+    //printf("ATA Primary Master: ");
+    //ata0m.Identify();
 
     AdvancedTechnologyAttachment ata0s(0x1F0, false);
     printf("ATA Primary Slave: ");
