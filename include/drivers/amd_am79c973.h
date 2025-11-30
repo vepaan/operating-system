@@ -43,7 +43,7 @@ namespace myos
                 myos::common::uint64_t logicalAddress;
                 myos::common::uint32_t recvBufferDescrAddress;
                 myos::common::uint32_t sendBufferDescrAddress;
-            } __attribute((packed));
+            } __attribute__((packed));
 
             struct BufferDescriptor
             {

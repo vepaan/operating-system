@@ -33,7 +33,7 @@ void EtherFrameHandler::Send(uint64_t dstMAC_BE, uint8_t* etherframePayload, uin
 EtherFrameProvider::EtherFrameProvider(amd_am79c973* backend)
 : RawDataHandler(backend)
 {
-  for (uint32_t i=0; i<65536; ++i)
+  for (uint32_t i=0; i<65535; ++i)
     handlers[i] = 0;
 }
 
