@@ -190,13 +190,12 @@ void amd_am79c973::Receive()
               if(handler->OnRawDataReceived(buffer, size))
                 Send(buffer, size);
 
-            /*
+            size = 64;
             for (int i=0; i<size; ++i)
             {
                 printfHex(buffer[i]);
                 printf(" ");
             }
-            */
         }
 
         recvBufferDescr[currentRecvBuffer].flags2 = 0;
@@ -212,4 +211,14 @@ void amd_am79c973::SetHandler(RawDataHandler* handler)
 uint64_t amd_am79c973::GetMACAddress()
 {
   return initBlock.physicalAddress;
+}
+
+void amd_am79c973::SetIPAddress(uint32_t ip)
+{
+  initBlock.logicalAddress = ip;
+}
+
+uint32_t amd_am79c973::GetIPAddress()
+{
+  return initBlock.logicalAddress;
 }

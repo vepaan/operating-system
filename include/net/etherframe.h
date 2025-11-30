@@ -48,7 +48,9 @@ namespace myos
       
       virtual bool OnRawDataReceived(myos::common::uint8_t* buffer, myos::common::uint32_t size);
       virtual void Send(myos::common::uint64_t dstMAC_BE, myos::common::uint16_t etherType_BE, myos::common::uint8_t* buffer, myos::common::uint32_t size);
-    
+      
+      myos::common::uint64_t GetMACAddress();
+      myos::common::uint32_t GetIPAddress();
     };
   }
 }

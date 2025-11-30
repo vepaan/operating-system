@@ -88,7 +88,9 @@ namespace myos
 
             void SetHandler(RawDataHandler* handler);
             myos::common::uint64_t GetMACAddress();
-            
+
+            void SetIPAddress(myos::common::uint32_t address);
+            myos::common::uint32_t GetIPAddress();
         };
 
     }
